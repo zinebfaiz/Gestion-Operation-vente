@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" import="java.sql.Connection, java.sql.DriverManager, java.sql.Statement, java.sql.ResultSet"
+<%@ page session="true" language="java" contentType="text/html; charset=UTF-8" import="java.sql.Connection, java.sql.DriverManager, java.sql.Statement, java.sql.ResultSet"
     pageEncoding="UTF-8" import="java.sql.*, java.util.*" %>
 <!DOCTYPE html>
 <html>
@@ -66,6 +66,19 @@
             newRow.insertCell(5).textContent = totalLigne;
 
             majTotal();
+            
+         // Création des champs cachés pour chaque ligne ajoutée
+            const hiddenFields = document.getElementById("hiddenFields");
+
+            hiddenFields.innerHTML += `
+                <input type="hidden" name="articles[]" value="${art.value}">
+                <input type="hidden" name="quantites[]" value="${quantite}">
+                <input type="hidden" name="prixs[]" value="${prixUnit.toFixed(2)}">
+            `;
+
+            // Met à jour le total caché aussi
+            document.getElementById("hiddenTotal").value = document.getElementById("total").value;
+            
         }
 
         function majTotal() {
@@ -142,8 +155,15 @@
 
 <body>
     <h2>Créer une commande</h2>
+    
+    
 
-    <form action="creationCommande.jsp" method="post">
+    <form action="interface2.jsp" method="post">
+    
+    <!-- Champs cachés pour stocker les données dynamiquement -->
+	<div id="hiddenFields"></div>
+	<input type="hidden" name="total_commande" id="hiddenTotal">
+	
         <!-- Sélection du client -->
         <label for="id_client">Client :</label>
         <select name="id_client" id="id_client" required>
@@ -234,12 +254,21 @@
         </table>
 
         <!-- Total -->
-        <label for="total">Total articles :</label>
+        <label for="total">Total commande :</label>
         <input type="number" id="total" readonly>
 
         <br><br>
-        <button type="submit">Suivant</button> //suivant un autre interface2 de reglement
+        <button type="submit">Suivant</button> //suivant vers un autre interface2.jsp de reglement
     </form>
+    
+    <%
+    // Stockage dans la session côté serveur
+    session.setAttribute("id_client", request.getParameter("id_client"));
+    session.setAttribute("total_commande", request.getParameter("total"));
+    session.setAttribute("articles", request.getParameterValues("articles[]"));
+    session.setAttribute("quantites", request.getParameterValues("quantite[]"));
+    session.setAttribute("prixs", request.getParameterValues("prix[]"));
+%>
 
     
 </body>
