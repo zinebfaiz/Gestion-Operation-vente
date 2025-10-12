@@ -13,17 +13,7 @@
     String modePaiement = request.getParameter("mode_paiement");
     String totalReglement = request.getParameter("total_reglement");
 
-    /* 
-    ======== DEBUG (désactivé) ========
-    Décommenter ce bloc si tu veux afficher les valeurs reçues
-    ----------------------------------
-    out.println("<h2>✅ Debug des paramètres reçus</h2>");
-    out.println("<strong>id_client:</strong> " + idClient + "<br>");
-    out.println("<strong>total_commande:</strong> " + totalCommande + "<br>");
-    out.println("<strong>mode_paiement:</strong> " + modePaiement + "<br>");
-    out.println("<strong>total_reglement:</strong> " + totalReglement + "<br>");
-    out.println("<hr>");
-    */
+
 
     Connection conn = null;
     PreparedStatement psCommande = null;
@@ -37,7 +27,7 @@
         conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "zineb", "zineb123");
         conn.setAutoCommit(false); // Démarre une transaction
 
-        // 1️⃣ Insertion dans COMMANDE
+        // 1️ Insertion dans COMMANDE
         String sqlCommande = "INSERT INTO Commande (id_client, total_commande) VALUES (?, ?)";
         psCommande = conn.prepareStatement(sqlCommande, new String[] {"id_commande"});
         psCommande.setInt(1, Integer.parseInt(idClient));
@@ -52,7 +42,7 @@
             throw new Exception("ID de commande non généré.");
         }
 
-        // 2️⃣ Insertion dans FORMER
+        // 2️ Insertion dans FORMER
         String sqlFormer = "INSERT INTO Former (id_commande, id_article, quantite, prix_unit) VALUES (?, ?, ?, ?)";
         psFormer = conn.prepareStatement(sqlFormer);
         for (int i = 0; i < articles.length; i++) {
@@ -63,7 +53,7 @@
             psFormer.executeUpdate();
         }
 
-        // 3️⃣ Insertion dans REGLEMENT
+        // 3️ Insertion dans REGLEMENT
         String sqlReglement = "INSERT INTO Reglement (id_commande, mode_reglement, montant) VALUES (?, ?, ?)";
         psReglement = conn.prepareStatement(sqlReglement);
         psReglement.setInt(1, idCommande);
@@ -71,7 +61,7 @@
         psReglement.setDouble(3, Double.parseDouble(totalReglement));
         psReglement.executeUpdate();
 
-        // ✅ Validation
+        // Validation
         conn.commit();
 %>
         <h3 style="color:green;">✅ Commande enregistrée avec succès !<br>ID commande : <%= idCommande %></h3>
