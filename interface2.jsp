@@ -1,5 +1,8 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" %>
-<%@ page import="java.util.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" session="true" import="java.util.*,java.sql.*" %>
+
+
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -50,7 +53,7 @@
 %>
 
     <!-- ✅ Formulaire de règlement -->
-    <form action="enregistrerCommande.jsp" method="post">
+    <form action="enregistrer.jsp" method="post">
         <label for="total_commande">Total de la commande :</label>
         <input type="number" id="total_commande" name="total_commande" value="<%= total %>" readonly><br><br>
 
@@ -68,7 +71,7 @@
         <label for="reste">Reste :</label>
         <input type="number" id="reste" name="reste" readonly><br><br>
 
-        <button type="submit">Valider et enregistrer la commande</button>
+        <button type="submit">Valider et enregistrer</button>
     </form>
 
 <%
