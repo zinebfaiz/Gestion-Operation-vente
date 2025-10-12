@@ -30,6 +30,14 @@
     }
 }
 
+        function ajouterChampCache(name, value) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            document.getElementById("hiddenFields").appendChild(input);
+        }
+
         function ajouterLigne() {
             const cat = document.getElementById("categorie");
             const art = document.getElementById("article");
@@ -39,25 +47,17 @@
             const quantite = parseInt(qte.value);
             const prixUnit = parseFloat(prix.value);
 
-            console.log("=== TEST INPUTS ===");
-            console.log("Catégorie choisie :", cat.value, "-", cat.options[cat.selectedIndex].text);
-            console.log("Article choisi :", art.value, "-", art.options[art.selectedIndex].text);
-            console.log("Quantité :", quantite);
-            console.log("Prix unitaire :", prixUnit);
-
-            //if (!cat.value || !art.value || quantite <= 0 || prixUnit <= 0) {
-            //    alert("Veuillez remplir tous les champs correctement (catégorie, article, prix et quantité).");
-            //    return;
-            //}
+            if (!cat.value || !art.value || isNaN(quantite) || isNaN(prixUnit) || quantite <= 0 || prixUnit <= 0) {
+                alert("Veuillez remplir tous les champs correctement.");
+                return;
+            }
 
             const table = document.getElementById("commandeTable");
-            const row = table.insertRow(-1);
             const categorieText = cat.options[cat.selectedIndex].text;
             const articleText = art.options[art.selectedIndex].text;
             const totalLigne = (quantite * prixUnit).toFixed(2);
 
             const newRow = table.insertRow(-1);
-
             newRow.insertCell(0).innerHTML = '<button type="button" onclick="supprimerLigne(this)">❌</button>';
             newRow.insertCell(1).textContent = categorieText;
             newRow.insertCell(2).textContent = articleText;
@@ -65,20 +65,15 @@
             newRow.insertCell(4).textContent = prixUnit.toFixed(2);
             newRow.insertCell(5).textContent = totalLigne;
 
+            // Ajouter les champs cachés
+            ajouterChampCache("articles", art.value);
+            ajouterChampCache("quantites", quantite);
+            ajouterChampCache("prixs", prixUnit.toFixed(2));
+
             majTotal();
-            
-         // Création des champs cachés pour chaque ligne ajoutée
-            const hiddenFields = document.getElementById("hiddenFields");
 
-            hiddenFields.innerHTML += `
-                <input type="hidden" name="articles[]" value="${art.value}">
-                <input type="hidden" name="quantites[]" value="${quantite}">
-                <input type="hidden" name="prixs[]" value="${prixUnit.toFixed(2)}">
-            `;
-
-            // Met à jour le total caché aussi
+            // Mettre à jour le total caché
             document.getElementById("hiddenTotal").value = document.getElementById("total").value;
-            
         }
 
         function majTotal() {
@@ -150,6 +145,8 @@
 	        try { if(rs2!=null) rs2.close(); if(stmt2!=null) stmt2.close(); if(conn2!=null) conn2.close(); } catch (Exception ex) {}
 	    }
 	%>
+	
+	
 	</script>
 </head>
 
@@ -261,14 +258,24 @@
         <button type="submit">Suivant</button> //suivant vers un autre interface2.jsp de reglement
     </form>
     
-    <%
-    // Stockage dans la session côté serveur
+    <script>
+document.querySelector("form").addEventListener("submit", function() {
+    const allInputs = document.querySelectorAll("input[type=hidden]");
+    allInputs.forEach(i => console.log(i.name, "=", i.value));
+});
+</script>
+    
+   
+<%// Stockage dans la session côté serveur
     session.setAttribute("id_client", request.getParameter("id_client"));
     session.setAttribute("total_commande", request.getParameter("total"));
-    session.setAttribute("articles", request.getParameterValues("articles[]"));
-    session.setAttribute("quantites", request.getParameterValues("quantite[]"));
-    session.setAttribute("prixs", request.getParameterValues("prix[]"));
+    session.setAttribute("articles", request.getParameterValues("articles"));   // CORRECT
+    session.setAttribute("quantites", request.getParameterValues("quantites")); // CORRECT
+    session.setAttribute("prixs", request.getParameterValues("prixs"));         // CORRECT
 %>
+
+
+
 
     
 </body>

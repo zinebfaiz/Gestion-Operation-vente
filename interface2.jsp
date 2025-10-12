@@ -21,9 +21,9 @@
 <%
     String idClient = request.getParameter("id_client");
     String total = request.getParameter("total_commande");
-    String[] articles = request.getParameterValues("articles[]");
-    String[] quantites = request.getParameterValues("quantites[]");
-    String[] prixs = request.getParameterValues("prixs[]");
+    String[] articles = request.getParameterValues("articles");
+    String[] quantites = request.getParameterValues("quantites");
+    String[] prixs = request.getParameterValues("prixs");
 
     if (idClient == null || total == null || articles == null || quantites == null || prixs == null) {
 %>
@@ -37,46 +37,50 @@
         session.setAttribute("prixs", prixs);
 %>
 
-<form action="enregistrerCommande directement dans bdd" method="post">
-    <!-- Affichage en lecture seule -->
-    <label for="total_commande">Total de la commande :</label>
-    <input type="number" id="total_commande" name="total_commande" value="<%= total %>" readonly><br><br>
-
-    <!-- Mode de paiement -->
-    <label for="mode_paiement">Mode de paiement :</label>
-    <select id="mode_paiement" name="mode_paiement" required>
-        <option value="">-- Sélectionner --</option>
-        <option value="Espèce">Espèce</option>
-        <option value="Virement">Virement</option>
-        <option value="Versement">Versement</option>
-    </select><br><br>
-
-    <!-- Total réglé -->
-    <label for="total_reglement">Montant réglé :</label>
-    <input type="number" id="total_reglement" name="total_reglement" oninput="calculerReste()" required><br><br>
-
-    <!-- Reste à payer -->
-    <label for="reste">Reste :</label>
-    <input type="number" id="reste" name="reste" readonly><br><br>
-
-    <button type="submit">Valider et enregistrer la commande</button>
-
-    <!-- Passer les articles en session ou dans des champs cachés si besoin -->
-</form>
+    <!-- ✅ Affichage des infos client + articles -->
+    <p>Client : <%= idClient %></p>
+    <p>Total : <%= total %></p>
 
 <%
-    }
-%>
-
-<p>Client : <%= idClient %></p>
-<p>Total : <%= total %></p>
-<%
-    for (int i = 0; i < articles.length; i++) {
+        for (int i = 0; i < articles.length; i++) {
 %>
     <p>Article <%= i+1 %>: <%= articles[i] %>, Qte: <%= quantites[i] %>, Prix: <%= prixs[i] %></p>
 <%
-    }
+        }
 %>
+
+    <!-- ✅ Formulaire de règlement -->
+    <form action="enregistrerCommande.jsp" method="post">
+        <label for="total_commande">Total de la commande :</label>
+        <input type="number" id="total_commande" name="total_commande" value="<%= total %>" readonly><br><br>
+
+        <label for="mode_paiement">Mode de paiement :</label>
+        <select id="mode_paiement" name="mode_paiement" required>
+            <option value="">-- Sélectionner --</option>
+            <option value="Espèce">Espèce</option>
+            <option value="Virement">Virement</option>
+            <option value="Versement">Versement</option>
+        </select><br><br>
+
+        <label for="total_reglement">Montant réglé :</label>
+        <input type="number" id="total_reglement" name="total_reglement" oninput="calculerReste()" required><br><br>
+
+        <label for="reste">Reste :</label>
+        <input type="number" id="reste" name="reste" readonly><br><br>
+
+        <button type="submit">Valider et enregistrer la commande</button>
+    </form>
+
+<%
+    } // fin du else
+%>
+
+<%
+    System.out.println("articles: " + Arrays.toString(articles));
+    System.out.println("quantites: " + Arrays.toString(quantites));
+    System.out.println("prixs: " + Arrays.toString(prixs));
+%>
+
 
 </body>
 </html>
